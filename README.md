@@ -3,5 +3,8 @@
 
 우선 깃허브 사용법 생각하면서. 
 
+git add
 git commit -m "내용 입력 하시고" 
 
+git pull (가져오기)
+git push (커밋내용 내보내기)
