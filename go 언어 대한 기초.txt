@@ -1,0 +1,30 @@
+:= 왠만하면 이거로 변수 선언한다 int string 대충 써라.
+const  name  = "상수를 쓰고 싶을때 이렇게 써라."
+함수 생성    //  뒤에  리턴타입을 적는거다.
+func  XXXX(a  type, b tpye)  type {
+
+   return a+ b
+}
+
+func  XXXX(a  int, b int, myname string) (int,string) {
+   함수리턴이 2개이상도 가능하다.
+   return a+ b, myname;
+}
+
+result := plus(2,3,4,5,6,7,8)
+
+
+func plus(a ... int) int {   // 이러면 a array인자값을 받음.
+   total:=0;
+   for index,item := range a {   // index 일종의 주소  item 인자값    _ 쓰면 무시된다.
+       total+=item
+   }
+   return total
+}
+
+
+ name:= "it is dog"
+for _,letter := range name {
+  fmt.println(letter);   // byte 로 나온다.
+   fmt.println(string(letter));   // 글자가 나온다.
+}

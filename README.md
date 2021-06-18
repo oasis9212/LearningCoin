@@ -8,3 +8,5 @@ git commit -m "내용 입력 하시고"
 
 git pull (가져오기)
 git push (커밋내용 내보내기)
+
+
