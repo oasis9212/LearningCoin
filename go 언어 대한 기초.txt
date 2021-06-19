@@ -28,3 +28,36 @@ for _,letter := range name {
   fmt.println(letter);   // byte 로 나온다.
    fmt.println(string(letter));   // 글자가 나온다.
 }
+
+foods := [3]string{"potato","piiza","lamen"}
+
+for _, dish := range  foods{
+
+fmt.println(dish)
+}
+   len( 배열)// 배열의 길이
+for i:= 0;i<len(foods);i++{
+  fmt.println(foods[i])
+}
+
+================================================2021/06/19
+slice  는 배열의 길이가 무한하다.  //배열의 길이만 없애면 슬라이스.
+foods := []string{"potato","piiza","lamen"}
+fmt.printf("%v\n",foods)
+foods = append(foods,"banana")  // 배열길이, "타입"
+fmt.printf("%v\n",foods)
+
+NEwfood := append(foods,"paper")  // 새로운 배열
+
+struct 구조 만들기
+
+type persion struct {
+ name string
+ age int
+}
+
+func (p person) sayHello(){
+     fmt.printf("Hello my name is %s and age %d",p.name,p.age);
+}
+
+//recevier
