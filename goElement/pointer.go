@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
 	a := 2
@@ -9,4 +11,6 @@ func main() {
 	a = 33
 	fmt.Println(*b)
 
+	//nako:=person.Person{"나코",21}
+	//fmt.Println(nako.name) 소문자로 되어서 임포트 불가.
 }
