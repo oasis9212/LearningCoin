@@ -20,7 +20,7 @@ type blockchain struct {
 var b *blockchain
 var once sync.Once
 
-func (b *block) claculateHash() string {
+func (b *block) claculateHash() {
 	hash := sha256.Sum256([]byte(b.data + b.prevHash))
 	b.hash = fmt.Sprintf("%x", hash)
 
