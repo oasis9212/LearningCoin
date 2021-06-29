@@ -8,9 +8,9 @@ import (
 
 // 싱글통 패턴.
 type block struct {
-	data     string //  저장할 내용
-	hash     string // 저장할 해쉬 내용.
-	prevHash string
+	Data     string //  저장할 내용
+	Hash     string // 저장할 해쉬 내용.
+	PrevHash string
 }
 
 type blockchain struct {
@@ -21,8 +21,8 @@ var b *blockchain
 var once sync.Once
 
 func (b *block) claculateHash() {
-	hash := sha256.Sum256([]byte(b.data + b.prevHash))
-	b.hash = fmt.Sprintf("%x", hash)
+	hash := sha256.Sum256([]byte(b.Data + b.PrevHash))
+	b.Hash = fmt.Sprintf("%x", hash)
 
 }
 
@@ -31,7 +31,7 @@ func getPrevHash() string {
 	if totalBlock == 0 {
 		return ""
 	}
-	return GetBlockChain().blocks[totalBlock-1].hash
+	return GetBlockChain().blocks[totalBlock-1].Hash
 }
 
 func createBlock(data string) *block {
@@ -40,12 +40,21 @@ func createBlock(data string) *block {
 	return &newBlock
 }
 
+func (b *blockchain) AddBlock(data string) {
+	b.blocks = append(b.blocks, createBlock(data))
+}
+
 func GetBlockChain() *blockchain {
 	if b == nil {
 		once.Do(func() { //딱한번만 실행시키는 방법.
 			b = &blockchain{}
-			b.blocks = append(b.blocks, createBlock("Genesis Block"))
+			b.AddBlock("Genesis")
+
 		})
 	}
 	return b
+}
+
+func (b *blockchain) AllBlocks() []*block {
+	return GetBlockChain().blocks
 }
