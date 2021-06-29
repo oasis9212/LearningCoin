@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+    <title>무가치형 코인</title>
+</head>
+<body>
+   <header>
+       <h1>{{.PageTitle}}</h1>
+   </header>
+    <main>
+
+     {{range .Blocks}}
+       <section>
+            <ul>
+                <li>{{.Data}}</li>
+                <li>{{.Hash}}</li>
+                <li>{{.PrevHash}}</li>
+            </ul>
+       </section>
+     {{end}}
+    </main>
+
+</body>
+</html>

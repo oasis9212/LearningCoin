@@ -2,19 +2,29 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
+	"net/http"
 	"ralo/blockchain"
 )
 
+const port string = ":4000"
+
+type HomeData struct {
+	PageTitle string
+	Blocks    []*blockchain.Block
+}
+
+//template.ParseFiles("templates/home.html")
+func home(rw http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("templates/home.gohtml")) // template.Must 자동으로 에러처리를 해주는 방식.
+	data := HomeData{"Home", blockchain.GetBlockChain().AllBlocks()}
+	tmpl.Execute(rw, data)
+
+}
+
 func main() {
-
-	chain := blockchain.GetBlockChain()
-	chain.AddBlock("Second Block")
-	chain.AddBlock("Third Block")
-	chain.AddBlock("Fourth Block")
-
-	for _, block := range chain.AllBlocks() {
-		fmt.Printf("[Data : %s]\n", block.Data)
-		fmt.Printf("[Hash : %s]\n", block.Hash)
-		fmt.Printf("[PrevHash : %s]\n", block.PrevHash)
-	}
+	http.HandleFunc("/", home)
+	fmt.Printf("Listening on http://localhost%s\n", port)
+	log.Fatal(http.ListenAndServe(port, nil))
 }

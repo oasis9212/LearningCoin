@@ -7,20 +7,20 @@ import (
 )
 
 // 싱글통 패턴.
-type block struct {
+type Block struct {
 	Data     string //  저장할 내용
 	Hash     string // 저장할 해쉬 내용.
 	PrevHash string
 }
 
 type blockchain struct {
-	blocks []*block
+	blocks []*Block
 }
 
 var b *blockchain
 var once sync.Once
 
-func (b *block) claculateHash() {
+func (b *Block) claculateHash() {
 	hash := sha256.Sum256([]byte(b.Data + b.PrevHash))
 	b.Hash = fmt.Sprintf("%x", hash)
 
@@ -34,8 +34,8 @@ func getPrevHash() string {
 	return GetBlockChain().blocks[totalBlock-1].Hash
 }
 
-func createBlock(data string) *block {
-	newBlock := block{data, "", getPrevHash()}
+func createBlock(data string) *Block {
+	newBlock := Block{data, "", getPrevHash()}
 	newBlock.claculateHash()
 	return &newBlock
 }
@@ -55,6 +55,6 @@ func GetBlockChain() *blockchain {
 	return b
 }
 
-func (b *blockchain) AllBlocks() []*block {
+func (b *blockchain) AllBlocks() []*Block {
 	return GetBlockChain().blocks
 }
