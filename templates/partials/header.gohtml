@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{{define  "header"}}
+<header>
+    <nav>
+        <a href="/"><h1>무가치성 코인</h1></a>
+        <ul>
+            <li>
+                <a href="/">Home</a>
+            </li>
+            <li>
+                <a href="/add">Add</a>
+            </li>
+        </ul>
+    </nav>
+        <h1>{{.}}</h1>
+</header>
+{{ end}}
