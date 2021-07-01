@@ -5,9 +5,11 @@
 <body>
 
  {{template "header" .PageTitle}}
+{{/* // 모달 에드 어트리뷰트랑 동일하다.*/}}
     <main>
-     {{range .Blocks}}
+     {{range .Blocks}}  // 홈데이터의 대한 블록
          {{template "block" .}}
+{{/*     // . Blocks의 내부를 가리킨다.*/}}
      {{end}}
     </main>
 {{template "footer"}}

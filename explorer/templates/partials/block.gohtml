@@ -1,7 +1,7 @@
 {{define "block"}}
 <div>
     <ul>
-        <li>{{.Data}}</li>
+        <li>{{.Data}}</li> {{/*        // Block struct 의 대한 데이터*/}}
         <li>{{.Hash}}</li>
         {{ if .PrevHash}}
             <li>{{.PrevHash}}</li>
