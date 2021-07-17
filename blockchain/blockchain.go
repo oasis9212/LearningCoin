@@ -2,15 +2,17 @@ package blockchain
 
 import (
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"sync"
 )
 
 // 싱글통 패턴.
 type Block struct {
-	Data     string //  저장할 내용
-	Hash     string // 저장할 해쉬 내용.
-	PrevHash string
+	Data     string `json:"data"` //  저장할 내용
+	Hash     string `json:"hash"` // 저장할 해쉬 내용.
+	PrevHash string `json:"prev_hash,omitempty"`
+	Height   int    `json:"height"`
 }
 
 type blockchain struct {
@@ -35,7 +37,7 @@ func getPrevHash() string {
 }
 
 func createBlock(data string) *Block {
-	newBlock := Block{data, "", getPrevHash()}
+	newBlock := Block{data, "", getPrevHash(), len(GetBlockChain().blocks) + 1}
 	newBlock.claculateHash()
 	return &newBlock
 }
@@ -57,4 +59,13 @@ func GetBlockChain() *blockchain {
 
 func (b *blockchain) AllBlocks() []*Block {
 	return GetBlockChain().blocks
+}
+
+var ErrNotFound = errors.New("block not found")
+
+func (b *blockchain) GetBlock(height int) (*Block, error) {
+	if height > len(b.blocks) {
+		return nil, ErrNotFound
+	}
+	return b.blocks[height-1], nil
 }

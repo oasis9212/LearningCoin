@@ -8,103 +8,109 @@ import (
 	"net/http"
 	"ralo/blockchain"
 	"ralo/utils"
+	"strconv"
 )
 
 var port string
 
 type url string
 
-// MarshalText는  json string 으로써 어떻게 보여줄지 결정하는 interface이다.
-func (u url) MarshalText() ([]byte, error) { // 묵시적으로 어떤 타입을 쓸것인지만 선정해준다.
-	url := fmt.Sprintf("http://locahost%s%s", port, u) // url 명시
-	return []byte(url), nil                            // URL 타입이 변환.
+func (u url) MarshalText() ([]byte, error) {
+	url := fmt.Sprintf("http://localhost%s%s", port, u)
+	return []byte(url), nil
 }
 
-// 마샬하던 언마샬 을 하던 결과물을 수정하는 interface가 존재해야한다.
-
-type urlDescrption struct {
-	Url         url    `json:"url"`
+type urlDescription struct {
+	URL         url    `json:"url"`
 	Method      string `json:"method"`
 	Description string `json:"description"`
-	Payload     string `json:"payload,omitempty"` //omitempty 필수가 아니다.  없으면 냅둔다.
+	Payload     string `json:"payload,omitempty"`
 }
 
 type addBlockBody struct {
-	Message string
+	Message string `json:"message"`
+}
+
+type errorResponse struct {
+	ErrorMessage string `json:"errormessage"`
 }
 
 func documentation(rw http.ResponseWriter, r *http.Request) {
-	fmt.Println("documentation 진입")
-	data := []urlDescrption{
+	data := []urlDescription{
 		{
-			Url:         url("/"), // URL 타입 결정.
+			URL:         url("/"),
 			Method:      "GET",
-			Description: "See documention",
+			Description: "See documentation",
 		},
 		{
-			Url:         url("/blocks"),
-			Method:      "GET",
-			Description: "See All blocks",
-			Payload:     "data:string",
-		},
-		{
-			Url:         url("/blocks"),
+			URL:         url("/blocks"),
 			Method:      "POST",
-			Description: "Add A blocks",
+			Description: "Add A block",
 			Payload:     "data:string",
 		},
 		{
-			Url:         url("/blocks/{id [0-9}+}"),
+			URL:         url("/blocks"),
 			Method:      "GET",
-			Description: "See a Block",
+			Description: "See all block",
 			Payload:     "data:string",
+		},
+		{
+			URL:         url("/blocks/{height}"),
+			Method:      "GET",
+			Description: "see A block",
 		},
 	}
-	fmt.Println(data)
-	rw.Header().Add("Content-Type", "application/json")
-	//result,err:=json.Marshal(data)
-	//
-	//utils.HandleErr(err)
-	//똑같다.
-	//fmt.Fprintf(rw,"%s",result)
+
 	json.NewEncoder(rw).Encode(data)
+	//result,err:= json.Marshal(data)
+	//utils.HandleErr(err)
+	//fmt.Fprintf(rw,"%s",result)
 
 }
 
-func blocks(rw http.ResponseWriter, r *http.Request) {
+// adapter
+func jsonContentTypeMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		rw.Header().Add("Content-Type", "application/json")
+		next.ServeHTTP(rw, r)
+	})
+}
 
-	fmt.Println("blocks 진입")
+func blocks(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		rw.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(rw).Encode(blockchain.GetBlockChain().AllBlocks())
 	case "POST":
-		var addBlockBody addBlockBody
-
-		utils.HandleErr(json.NewDecoder(r.Body).Decode(&addBlockBody))
-
-		blockchain.GetBlockChain().AddBlock(addBlockBody.Message)
+		var addblockbody addBlockBody
+		utils.HandleErr(json.NewDecoder(r.Body).Decode(&addblockbody))
+		blockchain.GetBlockChain().AddBlock(addblockbody.Message)
 		rw.WriteHeader(http.StatusCreated)
-
 	}
-
 }
 
 func block(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	fmt.Println(vars)
+	id, err := strconv.Atoi(vars["height"])
+	utils.HandleErr(err)
 
+	block, error := blockchain.GetBlockChain().GetBlock(id)
+	encoder := json.NewEncoder(rw)
+	if error == blockchain.ErrNotFound {
+		encoder.Encode(errorResponse{fmt.Sprint(error)})
+	} else {
+		json.NewEncoder(rw).Encode(block)
+
+	}
 }
 
 func Start(aport int) {
-
-	router := mux.NewRouter() // url(/block) 와 url 함수(blocks) 를 연결해주는 역할.
+	router := mux.NewRouter()
 	port = fmt.Sprintf(":%d", aport)
+	router.Use(jsonContentTypeMiddleware)
 	router.HandleFunc("/", documentation).Methods("GET")
 	router.HandleFunc("/blocks", blocks).Methods("GET", "POST")
-	router.HandleFunc("/blocks/{id: [0-9}+}", block).Methods("GET")
-	//explorer.Start()
-	fmt.Printf("Listening on http://localhost%s\n", port)
+	router.HandleFunc("/blocks/{height:[0-9]+}", block).Methods("GET")
 
+	fmt.Printf("go go http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, router))
 }
