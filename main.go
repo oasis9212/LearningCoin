@@ -1,8 +1,11 @@
 package main
 
-import "ralo/cli"
+import (
+	"ralo/cli"
+	"ralo/db"
+)
 
 func main() {
-
+	defer db.Close()
 	cli.Start()
 }

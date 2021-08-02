@@ -6,6 +6,7 @@ import (
 	"os"
 	"ralo/explorer"
 	"ralo/rest"
+	"runtime"
 )
 
 func usage() {
@@ -13,7 +14,7 @@ func usage() {
 	fmt.Printf("Please use the following flags:\n\n")
 	fmt.Printf("-port: Set the Port of the server \n")
 	fmt.Printf("-mode:  chosse 'html' and 'rest' \n")
-	os.Exit(0)
+	runtime.Goexit()
 
 }
 

@@ -21,4 +21,7 @@ B3   b3hash = (data+b2hash)
 B2   b2hash = (data+"otherdata"+b1hash)
 B3   b3hash = (data+b2hash)  -> 이것에 대한 해쉬값도 변한다. 
 
- 
+POW의 증명 방식: 일종의 Difficulty 와  Nonce 가 있다는 것부터 시작한다.
+퀴즈를 제시하면 : 0이 n개의 값이있는 것을 찾아야한다. 
+해쉬 함수는 일방향 함수라 데이터를 입력해놓은 이상 수정이 불가능하다.
+그래서 데이터+Nonce 해서 0이 n개의 값이 있는 함수를 만들어 준다.  

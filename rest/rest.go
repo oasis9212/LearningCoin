@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"ralo/blockchain"
 	"ralo/utils"
-	"strconv"
 )
 
 var port string
@@ -55,7 +54,7 @@ func documentation(rw http.ResponseWriter, r *http.Request) {
 			Payload:     "data:string",
 		},
 		{
-			URL:         url("/blocks/{height}"),
+			URL:         url("/blocks/{hash}"),
 			Method:      "GET",
 			Description: "see A block",
 		},
@@ -79,21 +78,20 @@ func jsonContentTypeMiddleware(next http.Handler) http.Handler {
 func blocks(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		json.NewEncoder(rw).Encode(blockchain.GetBlockChain().AllBlocks())
+
+		json.NewEncoder(rw).Encode(blockchain.BlockChain().Blocks())
 	case "POST":
 		var addblockbody addBlockBody
 		utils.HandleErr(json.NewDecoder(r.Body).Decode(&addblockbody))
-		blockchain.GetBlockChain().AddBlock(addblockbody.Message)
+		blockchain.BlockChain().Addblcok(addblockbody.Message)
 		rw.WriteHeader(http.StatusCreated)
 	}
 }
 
 func block(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["height"])
-	utils.HandleErr(err)
-
-	block, error := blockchain.GetBlockChain().GetBlock(id)
+	hash := vars["hash"]
+	block, error := blockchain.FindBlock(hash)
 	encoder := json.NewEncoder(rw)
 	if error == blockchain.ErrNotFound {
 		encoder.Encode(errorResponse{fmt.Sprint(error)})
@@ -109,7 +107,7 @@ func Start(aport int) {
 	router.Use(jsonContentTypeMiddleware)
 	router.HandleFunc("/", documentation).Methods("GET")
 	router.HandleFunc("/blocks", blocks).Methods("GET", "POST")
-	router.HandleFunc("/blocks/{height:[0-9]+}", block).Methods("GET")
+	router.HandleFunc("/blocks/{hash:[a-f0-9]+}", block).Methods("GET")
 
 	fmt.Printf("go go http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, router))
