@@ -2,14 +2,11 @@ package blockchain
 
 import (
 	"errors"
-	"fmt"
 	"ralo/db"
 	"ralo/utils"
 	"strings"
 	"time"
 )
-
-const difficulty int = 2
 
 // 싱글통 패턴.
 type Block struct {
@@ -45,7 +42,7 @@ func (b *Block) mine() {
 	for {
 		b.Timestamp = int(time.Now().Unix())
 		hash := utils.Hash(b)
-		fmt.Printf("\n\n\nTarget:%s\nHash:%s\nNonce:%d\n\n\n", target, hash, b.Nonce)
+
 		if strings.HasPrefix(hash, target) {
 			b.Hash = hash
 			break
@@ -55,17 +52,17 @@ func (b *Block) mine() {
 	}
 }
 
-func createBlock(prevHash string, height int) *Block {
+func createBlock(prevHash string, height int, diff int) *Block {
 	block := &Block{
 
-		Hash:         "",
-		PrevHash:     prevHash,
-		Height:       height,
-		Difficulty:   Blockchain().difficulty(),
-		Nonce:        0,
-		Transactions: []*Tx{makeCoinbaseTx("nico")},
+		Hash:       "",
+		PrevHash:   prevHash,
+		Height:     height,
+		Difficulty: diff,
+		Nonce:      0,
 	}
 	block.mine()
+	block.Transactions = Mempool.txToConfirm()
 	block.persist()
 	return block
 }

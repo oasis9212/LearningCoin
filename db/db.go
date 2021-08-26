@@ -20,9 +20,9 @@ func DB() *bolt.DB {
 		db = dbPointer
 		utils.HandleErr(err)
 		err = db.Update(func(tx *bolt.Tx) error {
-			_, err := tx.CreateBucketIfNotExists([]byte(dataBucket))
+			b1, err := tx.CreateBucketIfNotExists([]byte(dataBucket))
 			utils.HandleErr(err)
-			_, err = tx.CreateBucketIfNotExists([]byte(blocksBucket))
+			b2, err := tx.CreateBucketIfNotExists([]byte(blocksBucket))
 
 			return err
 		})
